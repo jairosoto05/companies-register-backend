@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+
 
 namespace CompaniesRegister.Controllers
 {
@@ -20,40 +19,41 @@ namespace CompaniesRegister.Controllers
             this._repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
 
-        // GET api/values
+        // GET api/company
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Company>>> Get()
         {
             return await _repository.GetAll();
         }
 
-        // GET api/values/5
+        // GET api/company/5
         [HttpGet("{rnc}")]
         public async Task<ActionResult<Company>> Get(string rnc)
         {
-            var response = await _repository.GetById(rnc);
+            var response = await _repository.GetByRNC(rnc);
             if (response == null) { return NotFound(); }
             return response;
         }
 
-        // POST api/values
+        // POST api/company
         [HttpPost]
-        public async Task Post([FromBody] string company)
+        public async Task Post([FromBody] Company company)
         {   
             await _repository.Insert(company);
         }
         
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        // PUT api/company/5
+        [HttpPut("{rnc}")]
+        public async void Put(string rnc, [FromBody] Company company)
         {
+            await _repository.UpdateByRNC(rnc, company);
         }
 
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public async Task Delete(int id)
+        // DELETE api/company/5
+        [HttpDelete("{rnc}")]
+        public async Task Delete(string rnc)
         {
-            await _repository.DeleteById(id);
+            await _repository.DeleteByRNC(rnc);
         }
     }        
 

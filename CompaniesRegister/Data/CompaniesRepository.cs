@@ -40,11 +40,6 @@ namespace CompaniesRegister.Data
             }
         }
 
-        internal Task Insert(string company)
-        {
-            throw new NotImplementedException();
-        }
-
         private Company MapToValue(SqlDataReader reader)
         {
             return new Company()
@@ -62,7 +57,7 @@ namespace CompaniesRegister.Data
             };
         }
 
-        public async Task<Company> GetById(string rnc)
+        public async Task<Company> GetByRNC(string rnc)
         {
             using (SqlConnection sql = new SqlConnection(_connectionString))
             {
@@ -92,7 +87,7 @@ namespace CompaniesRegister.Data
             {
                 using (SqlConnection sql = new SqlConnection(_connectionString))
                 {
-                    using (SqlCommand cmd = new SqlCommand("InsertValue", sql))
+                    using (SqlCommand cmd = new SqlCommand("createCompany", sql))
                     {
                         cmd.CommandType = System.Data.CommandType.StoredProcedure;
                         cmd.Parameters.Add(new SqlParameter("@rnc", value.rnc));
@@ -111,9 +106,41 @@ namespace CompaniesRegister.Data
             }
         }
 
-        public Task DeleteById(int Id)
+        public async Task UpdateByRNC(string rnc, Company value)
         {
-            throw new NotImplementedException();
+            using (SqlConnection sql = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("updateCompany", sql))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.Add(new SqlParameter("@rnc", rnc));
+                    cmd.Parameters.Add(new SqlParameter("@name", value.name));
+                    cmd.Parameters.Add(new SqlParameter("@tradeName", value.tradeName));
+                    cmd.Parameters.Add(new SqlParameter("@category", value.category));
+                    cmd.Parameters.Add(new SqlParameter("@paymentScheme", value.paymentScheme));
+                    cmd.Parameters.Add(new SqlParameter("@state", value.state));
+                    cmd.Parameters.Add(new SqlParameter("@economicActivity", value.economicActivity));
+                    cmd.Parameters.Add(new SqlParameter("@localManagement", value.localManagement));
+                    await sql.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
+                    return;
+                }
+            }
+        }
+
+        public async Task DeleteByRNC(string rnc)
+        {
+            using (SqlConnection sql = new SqlConnection(_connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("deleteCompany", sql))
+                {
+                    cmd.CommandType = System.Data.CommandType.StoredProcedure;
+                    cmd.Parameters.Add(new SqlParameter("@rnc", rnc));
+                    await sql.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
+                    return;
+                }
+            }
         }
     }
 }
